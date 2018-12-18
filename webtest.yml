@@ -3,10 +3,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sample-web
+  name: sample-web2
   namespace: default
   labels:
-    app: sample-web
+    app: sample-web2
 spec:
   replicas: 2
   revisionHistoryLimit: 10
@@ -16,16 +16,16 @@ spec:
       maxUnavailable: 25%
   selector:
     matchLabels:
-      app: sample-web
+      app: sample-web2
   template:
     metadata:
       labels:
-        app: sample-web
+        app: sample-web2
         version: 0.0.1
     spec:
       containers:
-      - name: sample-web
-        image: nalbam/sample-web:alpine
+      - name: sample-web2
+        image: orangebal/sample-web2:alpine
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -51,10 +51,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sample-web
+  name: sample-web2
   namespace: default
   labels:
-    app: sample-web
+    app: sample-web2
 spec:
   type: LoadBalancer
   ports:
@@ -62,7 +62,7 @@ spec:
       port: 80
       targetPort: 80
   selector:
-    app: sample-web
+    app: sample-web2
 
 ---
 # ------------------- Ingress ------------------- #
@@ -70,20 +70,20 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sample-web
+  name: sample-web2
   namespace: default
   labels:
-    app: sample-web
+    app: sample-web2
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: sample-web.apps.nalbam.com
+  - host: smartmedi.tech
     http:
       paths:
       - path: /
         backend:
-          serviceName: sample-web
+          serviceName: sample-web2
           servicePort: 80
 
 ---
@@ -92,15 +92,15 @@ spec:
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: sample-web
+  name: sample-web2
   namespace: default
   labels:
-    app: sample-web
+    app: sample-web2
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: sample-web
+    name: sample-web2
   minReplicas: 2
   maxReplicas: 100
   metrics:
