@@ -89,22 +89,3 @@ spec:
 ---
 # ------------------- HorizontalPodAutoscaler ------------------- #
 
-apiVersion: autoscaling/v2beta1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: sample-web2
-  namespace: default
-  labels:
-    app: sample-web2
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: sample-web2
-  minReplicas: 2
-  maxReplicas: 100
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 65
