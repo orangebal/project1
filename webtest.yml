@@ -3,10 +3,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sample-web2
+  name: sample-web
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web
 spec:
   replicas: 2
   revisionHistoryLimit: 10
@@ -16,16 +16,16 @@ spec:
       maxUnavailable: 25%
   selector:
     matchLabels:
-      app: sample-web2
+      app: sample-web
   template:
     metadata:
       labels:
-        app: sample-web2
+        app: sample-web
         version: 0.0.1
     spec:
       containers:
-      - name: sample-web2
-        image: orangebal/sample-web2:alpine
+      - name: sample-web
+        image: nalbam/sample-web:alpine
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -51,10 +51,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sample-web2
+  name: sample-web
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web
 spec:
   type: LoadBalancer
   ports:
@@ -62,7 +62,7 @@ spec:
       port: 80
       targetPort: 80
   selector:
-    app: sample-web2
+    app: sample-web
 
 ---
 # ------------------- Ingress ------------------- #
@@ -70,36 +70,37 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sample-web2
+  name: sample-web
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: smartmedi.tech
+  - host: sample-web.apps.nalbam.com
     http:
       paths:
       - path: /
         backend:
-          serviceName: sample-web2
+          serviceName: sample-web
           servicePort: 80
 
 ---
 # ------------------- HorizontalPodAutoscaler ------------------- #
+
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: sample-web2
+  name: sample-web
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: sample-web2
+    name: sample-web
   minReplicas: 2
   maxReplicas: 100
   metrics:
