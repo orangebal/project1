@@ -1,0 +1,110 @@
+# ------------------- Deployment ------------------- #
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-web2
+  namespace: default
+  labels:
+    app: sample-web2
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: sample-web2
+  template:
+    metadata:
+      labels:
+        app: sample-web2
+        version: 0.0.1
+    spec:
+      containers:
+      - name: sample-web2
+        image: orangebal/sample-web2:alpine
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 3
+          periodSeconds: 15
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+---
+# ------------------- Service ------------------- #
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-web2
+  namespace: default
+  labels:
+    app: sample-web2
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: sample-web2
+
+---
+# ------------------- Ingress ------------------- #
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sample-web2
+  namespace: default
+  labels:
+    app: sample-web2
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: smartmedi.tech
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: sample-web2
+          servicePort: 80
+
+---
+# ------------------- HorizontalPodAutoscaler ------------------- #
+
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sample-web2
+  namespace: default
+  labels:
+    app: sample-web2
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sample-web2
+  minReplicas: 2
+  maxReplicas: 100
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 65
