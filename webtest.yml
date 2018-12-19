@@ -28,12 +28,12 @@ spec:
         image: orangebal/sample-web2:alpine
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 8080
           protocol: TCP
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 30
           timeoutSeconds: 3
           periodSeconds: 15
@@ -59,8 +59,8 @@ spec:
   type: LoadBalancer
   ports:
     - name: http
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080
   selector:
     app: sample-web2
 
@@ -84,7 +84,7 @@ spec:
       - path: /
         backend:
           serviceName: sample-web2
-          servicePort: 80
+          servicePort: 8080
 
 ---
 # ------------------- HorizontalPodAutoscaler ------------------- #
