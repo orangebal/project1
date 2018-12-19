@@ -3,10 +3,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sample-web2
+  name: sample-web3
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web3
 spec:
   replicas: 2
   revisionHistoryLimit: 10
@@ -16,24 +16,24 @@ spec:
       maxUnavailable: 25%
   selector:
     matchLabels:
-      app: sample-web2
+      app: sample-web3
   template:
     metadata:
       labels:
-        app: sample-web2
+        app: sample-web3
         version: 0.0.1
     spec:
       containers:
-      - name: sample-web2
-        image: orangebal/sample-web2:alpine
+      - name: sample-web3
+        image: orangebal/sample-web3:alpine
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 8080
           protocol: TCP
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 30
           timeoutSeconds: 3
           periodSeconds: 15
@@ -51,18 +51,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sample-web2
+  name: sample-web3
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web3
 spec:
   type: LoadBalancer
   ports:
     - name: http
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080
   selector:
-    app: sample-web2
+    app: sample-web3
 
 ---
 # ------------------- Ingress ------------------- #
@@ -70,21 +70,21 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sample-web2
+  name: sample-web3
   namespace: default
   labels:
-    app: sample-web2
+    app: sample-web3
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: smartmedi.tech
+  - host: smartmedi.io
     http:
       paths:
       - path: /
         backend:
-          serviceName: sample-web2
-          servicePort: 80
+          serviceName: sample-web3
+          servicePort: 8080
 
 ---
 # ------------------- HorizontalPodAutoscaler ------------------- #
@@ -92,7 +92,7 @@ spec:
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: sample-web2
+  name: sample-web3
   namespace: default
   labels:
     app: sample-web2
@@ -100,7 +100,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: sample-web2
+    name: sample-web3
   minReplicas: 2
   maxReplicas: 100
   metrics:
