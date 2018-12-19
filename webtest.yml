@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: sample-web2
-        image: orangebal/sample-web2:alpine
+        image: orangebal/example-nginx:alpine
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
